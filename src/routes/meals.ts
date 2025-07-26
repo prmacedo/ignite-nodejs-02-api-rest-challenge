@@ -19,11 +19,11 @@ export async function mealsRoutes(app: FastifyInstance) {
   app.get("/:id", async (request) => {
     const { userId } = request.cookies;
 
-    const getMealsParamsSchema = z.object({
+    const getMealParamsSchema = z.object({
       id: z.uuid(),
     });
 
-    const { id } = getMealsParamsSchema.parse(request.params);
+    const { id } = getMealParamsSchema.parse(request.params);
 
     const meals = await knex("meals")
       .where({
@@ -38,7 +38,7 @@ export async function mealsRoutes(app: FastifyInstance) {
   app.post("/", async (request, reply) => {
     const { userId } = request.cookies;
 
-    const createMealsBodySchema = z.object({
+    const createMealBodySchema = z.object({
       name: z.string(),
       description: z.string(),
       isOnDiet: z.boolean(),
@@ -47,7 +47,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     });
 
     const { name, description, isOnDiet, date, time } =
-      createMealsBodySchema.parse(request.body);
+      createMealBodySchema.parse(request.body);
 
     await knex("meals").insert({
       id: randomUUID(),
@@ -65,13 +65,13 @@ export async function mealsRoutes(app: FastifyInstance) {
   app.put("/:id", async (request, reply) => {
     const { userId } = request.cookies;
 
-    const putMealsParamsSchema = z.object({
+    const putMealParamsSchema = z.object({
       id: z.uuid(),
     });
 
-    const { id } = putMealsParamsSchema.parse(request.params);
+    const { id } = putMealParamsSchema.parse(request.params);
 
-    const putMealsBodySchema = z.object({
+    const putMealBodySchema = z.object({
       name: z.string().optional(),
       description: z.string().optional(),
       isOnDiet: z.boolean().optional(),
@@ -79,7 +79,7 @@ export async function mealsRoutes(app: FastifyInstance) {
       time: z.iso.time().optional(),
     });
 
-    const _body = putMealsBodySchema.safeParse(request.body);
+    const _body = putMealBodySchema.safeParse(request.body);
 
     if (!_body.success) {
       console.log("Invalid body.", z.formatError(_body.error));
@@ -100,6 +100,20 @@ export async function mealsRoutes(app: FastifyInstance) {
         date,
         time,
       });
+
+    return reply.status(204).send();
+  });
+
+  app.delete("/:id", async (request, reply) => {
+    const { userId } = request.cookies;
+
+    const deleteMealParamsSchema = z.object({
+      id: z.uuid(),
+    });
+
+    const { id } = deleteMealParamsSchema.parse(request.params);
+
+    await knex("meals").where({ id, user_id: userId }).delete();
 
     return reply.status(204).send();
   });
