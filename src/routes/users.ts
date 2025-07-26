@@ -25,7 +25,7 @@ export async function usersRoutes(app: FastifyInstance) {
       avatar,
     });
 
-    reply.setCookie("user_id", id, {
+    reply.setCookie("userId", id, {
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
