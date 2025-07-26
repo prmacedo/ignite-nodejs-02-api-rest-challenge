@@ -99,6 +99,7 @@ export async function mealsRoutes(app: FastifyInstance) {
         is_on_diet: isOnDiet,
         date,
         time,
+        updated_at: knex.fn.now(),
       });
 
     return reply.status(204).send();
