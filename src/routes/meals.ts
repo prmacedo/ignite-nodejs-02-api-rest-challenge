@@ -16,6 +16,25 @@ export async function mealsRoutes(app: FastifyInstance) {
     return { meals };
   });
 
+  app.get("/:id", async (request) => {
+    const { userId } = request.cookies;
+
+    const getMealsParamsSchema = z.object({
+      id: z.uuid(),
+    });
+
+    const { id } = getMealsParamsSchema.parse(request.params);
+
+    const meals = await knex("meals")
+      .where({
+        id,
+        user_id: userId,
+      })
+      .select();
+
+    return { meals };
+  });
+
   app.post("/", async (request, reply) => {
     const { userId } = request.cookies;
 
