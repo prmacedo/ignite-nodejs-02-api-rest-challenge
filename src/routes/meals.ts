@@ -61,4 +61,46 @@ export async function mealsRoutes(app: FastifyInstance) {
 
     return reply.status(201).send();
   });
+
+  app.put("/:id", async (request, reply) => {
+    const { userId } = request.cookies;
+
+    const putMealsParamsSchema = z.object({
+      id: z.uuid(),
+    });
+
+    const { id } = putMealsParamsSchema.parse(request.params);
+
+    const putMealsBodySchema = z.object({
+      name: z.string().optional(),
+      description: z.string().optional(),
+      isOnDiet: z.boolean().optional(),
+      date: z.iso.date().optional(),
+      time: z.iso.time().optional(),
+    });
+
+    const _body = putMealsBodySchema.safeParse(request.body);
+
+    if (!_body.success) {
+      console.log("Invalid body.", z.formatError(_body.error));
+      return reply.status(400).send(z.formatError(_body.error));
+    }
+
+    const { name, description, isOnDiet, date, time } = _body.data;
+
+    await knex("meals")
+      .where({
+        id,
+        user_id: userId,
+      })
+      .update({
+        name,
+        description,
+        is_on_diet: isOnDiet,
+        date,
+        time,
+      });
+
+    return reply.status(204).send();
+  });
 }
