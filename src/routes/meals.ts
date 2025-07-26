@@ -1,7 +1,9 @@
 import { FastifyInstance } from "fastify";
+import { knex } from "../database";
 
 export async function mealsRoutes(app: FastifyInstance) {
   app.get("/", async () => {
-    return "All meals";
+    const meals = await knex.table("meals").select("*");
+    return { meals };
   });
 }
