@@ -9,3 +9,4 @@ build
 
 # Environment
 .env
+.env.test

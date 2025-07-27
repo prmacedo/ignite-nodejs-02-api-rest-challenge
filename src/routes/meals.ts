@@ -25,14 +25,15 @@ export async function mealsRoutes(app: FastifyInstance) {
 
     const { id } = getMealParamsSchema.parse(request.params);
 
-    const meals = await knex("meals")
+    const meal = await knex("meals")
       .where({
         id,
         user_id: userId,
       })
-      .select();
+      .select()
+      .first();
 
-    return { meals };
+    return { meal };
   });
 
   app.post("/", async (request, reply) => {
