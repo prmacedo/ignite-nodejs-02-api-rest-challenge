@@ -24,7 +24,6 @@ export async function usersRoutes(app: FastifyInstance) {
       const mealsGroupedByDiet = await knex("meals")
         .where("user_id", userId)
         .groupBy("is_on_diet")
-        .orderBy(["date", { column: "time", order: "asc" }])
         .select("is_on_diet")
         .count("is_on_diet", { as: "total" });
 
